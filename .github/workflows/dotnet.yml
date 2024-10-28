@@ -3,13 +3,8 @@
 
 name: .NET
 
-on:
-  push:
-    tags: 
-      - '*.*.*'
-  pull_request:
-    tags: 
-      - '*.*.*'
+on: workflow_dispatch
+  tags: '1.0.0'
   
 
 jobs:
