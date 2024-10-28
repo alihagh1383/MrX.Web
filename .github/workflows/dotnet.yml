@@ -3,8 +3,13 @@
 
 name: .NET
 
-on: workflow_dispatch
-  tags: '1.0.0'
+on:
+  workflow_dispatch:
+    inputs:
+      v:
+        description: 'Version'
+        required: true
+        type: string
   
 
 jobs:
@@ -27,10 +32,10 @@ jobs:
       
     - name: Pakage
       run: > 
-        dotnet pack --no-restore --no-build --configuration Release -p:PackageVersion=${{ github.ref_name }} --output .
+        dotnet pack --no-restore --no-build --configuration Release -p:PackageVersion=${{ inputs.v }} --output .
         
     - name: Publish
       run: >
-        dotnet nuget push PackageUtils.${{ github.ref_name }}.nupkg 
+        dotnet nuget push PackageUtils.${{ inputs.v }}.nupkg 
         -s https://nuget.pkg.github.com/alihagh1383/index.json 
         -k ${{ secrets.NUGET_AUTH_TOKEN }}
