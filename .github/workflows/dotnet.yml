@@ -5,24 +5,32 @@ name: .NET
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    tags: 
+      - '*.*.*'
+  
 
 jobs:
   build:
-
+    name: Build
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+        
     - name: Restore dependencies
       run: dotnet restore
+      
     - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet build --configuration Release
+      
+    - name: Pakage
+      run: > 
+        dotnet pack --no-restore --no-build --configuration Release -p:PackageVersion=${{ github.ref_name }} --output .
+        
+    - name: Publish
+      run: >
+        dotnet nuget push PackageUtils.${{ github.ref_name }}.nupkg -s https://nuget.pkg.github.com/alihagh1383/index.json -k ${{ secrets.NUGET_AUTH_TOKEN }}
