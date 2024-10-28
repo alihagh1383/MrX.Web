@@ -38,4 +38,4 @@ jobs:
       run: >
         dotnet nuget push PackageUtils.${{ inputs.tags }}.nupkg 
         -s https://nuget.pkg.github.com/alihagh1383/index.json 
-        -k ${{ secrets.NUGET_AUTH_TOKEN }}
+        -k ${{ secrets.NUGET_PACKAGE_TOKEN }}
