@@ -36,6 +36,6 @@ jobs:
         
     - name: Publish
       run: >
-        dotnet nuget push PackageUtils.${{ inputs.v }}.nupkg 
+        dotnet nuget push MrX.Web.${{ inputs.v }}.nupkg 
         -s https://nuget.pkg.github.com/alihagh1383/index.json 
         -k ${{ secrets.NUGET_PACKAGE_TOKEN }}
