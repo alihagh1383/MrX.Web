@@ -1,26 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MrX.Web.Middleware
 {
-    public class LogRequestBody
+    public class LogRequestBody(RequestDelegate next)
     {
-        private readonly RequestDelegate next;
-        public LogRequestBody(RequestDelegate next)
-        {
-            this.next = next;
-        }
-
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.Items["Log"] is SetupLogMiddleware.Log L)
+            if (context.Items["Log"] is SetupLogMiddleware.Log log)
             {
                 context.Request.Body.Position = 0;
-                L.Request_Body =await new StreamReader(context.Request.Body).ReadToEndAsync();
+                log.Request_Body =await new StreamReader(context.Request.Body).ReadToEndAsync();
                 context.Request.Body.Position = 0;
                 await next.Invoke(context);
             }
