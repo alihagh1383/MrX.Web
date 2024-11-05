@@ -4,6 +4,12 @@ namespace MrX.Web.Extension;
 
 public static class WebApplicationExtension
 {
-    public static void UseMiddlewareForPath<T>(this Microsoft.AspNetCore.Builder.IApplicationBuilder app, string path) => app.UseWhen(configuration: appBuilder => appBuilder.UseMiddleware<T>(), predicate: context => context.Request.Path.StartsWithSegments(path));
+    public static void UseMiddlewareForPaths<T>(this Microsoft.AspNetCore.Builder.IApplicationBuilder app, params string[] path)
+        => app.UseWhen(configuration: appBuilder => appBuilder.UseMiddleware<T>(), predicate: (context) =>
+        {
+            foreach (var item in path)
+                if (context.Request.Path.StartsWithSegments(item)) return true;
+            return false;
+        });
 
 }
