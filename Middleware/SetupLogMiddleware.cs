@@ -35,7 +35,6 @@ namespace MrX.Web.Middleware
             public void DoLog() => logger.Log(Connection_Id, this, true);
             public string Connection_Id { get; set; } = connectionId;
             public string Request_Method { get; set; } = string.Empty;
-            public string Request_Path { get; set; } = string.Empty;
             public string Request_Protocol { get; set; } = string.Empty;
             public string Request_Query { get; set; } = string.Empty;
             public ICollection Request_Cookies { get; set; } = new Dictionary<string, string>();
@@ -46,6 +45,7 @@ namespace MrX.Web.Middleware
             public string Response_Body { get; set; } = string.Empty;
             public IHeaderDictionary Response_Headers { get; set; } = new HeaderDictionary();
             public string Message { get; set; } = string.Empty;
+            public string Request_Path { get; set; } = string.Empty;
 
             public override string ToString()
             {
