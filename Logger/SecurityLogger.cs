@@ -1,34 +1,39 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace MrX.Web.Logger;
 
 public class SecurityLogger
 {
-    public SecurityLogger()
+    bool ToFile;
+    bool ToConsole; Microsoft.Extensions.Logging.ILogger logger;
+    public SecurityLogger(Microsoft.Extensions.Logging.ILoggerFactory logger, bool ToFile = false, bool ToConsole = true)
     {
-        if (!Directory.Exists("Log")) _ = Directory.CreateDirectory("Log");
+        this.ToFile = ToFile;
+        this.ToConsole = ToConsole;
+        this.logger = logger.CreateLogger(typeof(SecurityLogger));
+        if (ToFile)
+            if (!Directory.Exists("Log")) _ = Directory.CreateDirectory("Log");
     }
 
     private readonly object _l = new();
 
     public Task Log(string id, object message, bool asJson = true)
     {
-        TRY:
-        try
+        var text = ((asJson) ? JsonConvert.SerializeObject(message) : message).ToString();
+        if (this.ToFile)
         {
-            var file = Path.Combine("Log", DateOnly.FromDateTime(DateTime.Now).ToLongDateString() + ".Log");
-            var text = ((asJson) ? JsonConvert.SerializeObject(message) : message).ToString();
-            if (string.IsNullOrWhiteSpace(text)) Console.WriteLine("null");
-            lock (_l)
+            try
             {
-                File.AppendAllText(file, $"{DateTime.Now}:::{id}=>{text} \n");
+                var file = Path.Combine("Log", DateOnly.FromDateTime(DateTime.Now).ToLongDateString() + ".Log");
+                lock (_l) File.AppendAllText(file, $"{DateTime.Now}:::{id}=>{text} \n");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex.Message);
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-
+        if (ToConsole) logger.LogInformation($"{DateTime.Now}:::{id}=>{text} \n");
         return Task.CompletedTask;
     }
 }
