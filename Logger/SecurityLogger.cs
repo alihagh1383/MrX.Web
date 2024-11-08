@@ -33,7 +33,7 @@ public class SecurityLogger
                 logger.LogError(ex.Message);
             }
         }
-        if (ToConsole) logger.LogInformation($"{DateTime.Now}:::{id}=>{text} \n");
+        if (ToConsole) logger.Log(LogLevel.Information,$"{DateTime.Now}:::{id}=>{text} \n");
         return Task.CompletedTask;
     }
 }
