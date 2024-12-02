@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+﻿using Newtonsoft.Json;
 
 namespace MrX.Web.Logger;
 
@@ -12,6 +12,6 @@ public class DbUpdateLogger
             _ = Directory.CreateDirectory(Path.Combine("Log", tableName));
         File.AppendAllText(
             Path.Combine("Log", tableName, entityId),
-            Newtonsoft.Json.JsonConvert.SerializeObject(entity));
+            JsonConvert.SerializeObject(entity));
     }
 }

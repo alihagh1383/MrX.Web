@@ -1,25 +1,26 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace MrX.Web.Middleware
+namespace MrX.Web.Middleware;
+
+public class LogRequestHeaders
 {
-    public class LogRequestHeaders 
+    private readonly RequestDelegate next;
+
+    public LogRequestHeaders(RequestDelegate next)
     {
-        private readonly RequestDelegate next;
-        public LogRequestHeaders(RequestDelegate next)
+        this.next = next;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        if (context.Items["Log"] is SetupLogMiddleware.Log L)
         {
-            this.next = next;
+            L.Request_Headers = context.Request.Headers;
+            await next.Invoke(context);
         }
-
-        public async Task InvokeAsync(HttpContext context)
+        else
         {
-            if (context.Items["Log"] is SetupLogMiddleware.Log L)
-            {
-                L.Request_Headers = context.Request.Headers;
-                await next.Invoke(context);
-            }
-            else
-                throw new Exception("SetupLogMiddleware Not Found");
-
+            throw new Exception("SetupLogMiddleware Not Found");
         }
     }
 }
