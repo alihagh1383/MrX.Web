@@ -17,38 +17,45 @@ namespace MrX.Web.Exceptions
             StatusCode = StatusCodes.Status400BadRequest;
             Data = new { ValidType = type.Name, SendedParameter = data };
         }
-        public static void ForPassword(string Pass, bool Letters = true, bool UpCase = false, bool LowCase = false, bool Special = false, bool Numbers = false, int Length = 8)
+        public static NotValidParameterException? ForPassword(string pass, bool letters = true, bool upCase = false, bool lowCase = false, bool special = false, bool numbers = false, int length = 8)
         {
-            if (Security.PasswordCheck.Length_checker(Pass, Length)) goto Error;
-            if (LowCase && Security.PasswordCheck.LowLetters_checker(Pass)) goto Error;
-            if (UpCase && Security.PasswordCheck.UpLetters_checker(Pass)) goto Error;
-            if (Letters && Security.PasswordCheck.Letters_checker(Pass)) goto Error;
-            if (Special && Security.PasswordCheck.Special_Characters_checker(Pass)) goto Error;
-            if (Numbers && Security.PasswordCheck.Numbers_checker(Pass)) goto Error;
+            if (!Security.PasswordCheck.Length_checker(pass, length)) goto Error;
+            if (lowCase && !Security.PasswordCheck.LowLetters_checker(pass)) goto Error;
+            if (upCase && !Security.PasswordCheck.UpLetters_checker(pass)) goto Error;
+            if (letters && !Security.PasswordCheck.Letters_checker(pass)) goto Error;
+            if (special && !Security.PasswordCheck.Special_Characters_checker(pass)) goto Error;
+            if (numbers && !Security.PasswordCheck.Numbers_checker(pass)) goto Error;
             goto Ok;
         Error:
             {
-                throw new NotValidParameterException(typeof(string), Pass)
+                return new NotValidParameterException(typeof(string), pass)
                 {
                     Data = new
                     {
-                        Letters,
-                        UpCase,
-                        LowCase,
-                        Special,
-                        Numbers,
-                        Length,
+                        Letters = letters,
+                        UpCase = upCase,
+                        LowCase = lowCase,
+                        Special = special,
+                        Numbers = numbers,
+                        Length = length,
                     }
                 };
             }
         Ok:
             {
-
+                return null;
             }
         }
-        public static void ForGuid(string data, out Guid Id)
+        public static NotValidParameterException ForGuid(string? data, out Guid id)
         {
-            if (!Guid.TryParse(data, out Id)) throw new NotValidParameterException(typeof(Guid), data);
+            if (!Guid.TryParse(data, out id)) return new NotValidParameterException(typeof(Guid), data); return null;
+        }
+        public static bool TryGuid(string? data, out Guid id, out NotValidParameterException? exception)
+        {
+            exception = null;
+            if (Guid.TryParse(data, out id)) return true;
+            exception = new NotValidParameterException(typeof(Guid), data);
+            return false;
         }
     }
 }

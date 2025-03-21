@@ -5,11 +5,12 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using MrX.Web.ApiCallback;
 
 namespace MrX.Web.Exceptions
 {
-    public abstract class ApiException() : Exception
+    public abstract class ApiException()
     {
         public Boolean IsSuccess { get; set; } = false;
         public int StatusCode { get; set; }

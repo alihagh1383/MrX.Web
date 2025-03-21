@@ -3,97 +3,119 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MrX.Web.ApiCallback
 {
-    public class Return
+    public class Return<T>
     {
         public Boolean IsSuccess { get; set; }
         public int StatusCode { get; set; }
         public string? Message { get; set; }
-        public object? Data { get; set; }
-        public Return(bool success, int status, string? message = null, object? data = null)
+        public T Data { get; set; }
+        public Return(bool success, int status, string? message = default, T data = default)
         {
             IsSuccess = success;
             StatusCode = status;
             Message = message;
             Data = data;
         }
+
+        public void WriteToHttpContext(HttpContext httpContext) => WriteToHttpResponse(httpContext.Response);
+        public void WriteToHttpResponse(HttpResponse response)
+        {
+            response.StatusCode = StatusCode;
+            response.WriteAsJsonAsync<Return<T>>(this);
+        }
+        public IResult ToResult() => Results.Json(this, statusCode: StatusCode);
+        public IActionResult ToActionResult() => new JsonResult(this) { StatusCode = StatusCode };
+
         /// <summary>
         ///     409
         /// </summary>
-        public static Return ThisExist(string? message, object? data = null)
+        public static Return<T> ThisExist(string? message, T data = default)
         {
             return new(false, 409, message, data);
         }
+
         /// <summary>
         ///     403
         /// </summary>
-        public static Return AccessDeny(string? message, object? data = null)
+        public static Return<T> AccessDeny(string? message, T data = default)
         {
             return new(false, 403, message, data);
         }
+
         /// <summary>
         ///     200
         /// </summary>
-        public static Return Sucsses(bool success, string? message, object? data = null)
+        public static Return<T> Sucsses(bool success, string? message, T data = default)
         {
             return new(success, 200, message, data);
         }
-        /// <summary>
-        ///     404
-        /// </summary>
-        public static Return NotExist(string Message, object? data = null)
-        {
-            return new(false, 404, Message, data);
-        }
-
-        /// <summary>
-        ///     400
-        /// </summary>
-        public static Return HeaderNotFound(string Message, object? data = null)
-        {
-            return new(false, 400, Message, data);
-        }
-
-        /// <summary>
-        ///     400
-        /// </summary>
-        public static Return Invalid(string Message, object? data = null)
-        {
-            return new(false, 400, Message, data);
-        }
 
         /// <summary>
         ///     404
         /// </summary>
-        public static Return NotFound(string Message, object? data = null)
+        public static Return<T> NotExist(string message, T data = default)
         {
-            return new(false, 404, Message, data);
+            return new(false, 404, message, data);
         }
 
         /// <summary>
         ///     400
         /// </summary>
-        public static Return ParameterNotFound(string Message, object? data = null)
+        public static Return<T> HeaderNotFound(string message, T data = default)
         {
-            return new(false, 400, Message, data);
+            return new(false, 400, message, data);
+        }
+
+        /// <summary>
+        ///     400
+        /// </summary>
+        public static Return<T> Invalid(string message, T data = default)
+        {
+            return new(false, 400, message, data);
+        }
+
+        /// <summary>
+        ///     404
+        /// </summary>
+        public static Return<T> NotFound(string message, T data = default)
+        {
+            return new(false, 404, message, data);
+        }
+
+        /// <summary>
+        ///     400
+        /// </summary>
+        public static Return<T> ParameterNotFound(string message, T data = default)
+        {
+            return new(false, 400, message, data);
         }
 
         /// <summary>
         ///     419
         /// </summary>
-        public static Return Expire(string Message, object? data = null)
+        public static Return<T> Expire(string message, T data = default)
         {
-            return new(false, 419, Message, data);
+            return new(false, 419, message, data);
         }
 
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented,
                 new StringEnumConverter());
+        }
+    }
+    public class Return : Return<object?>
+    {
+        public Return(bool success, int status, string? message = default, object? data = default) : base(success, status, message, data)
+        {
+
         }
     }
 }

@@ -16,17 +16,19 @@ namespace MrX.Web.Exceptions
             StatusCode = StatusCodes.Status400BadRequest;
             Data = new { Parameters = s };
         }
-        public static void StringNullOrWhiteSpace(string P)
+        public static NullParameterException? StringNullOrWhiteSpace(string p)
         {
-            if (string.IsNullOrWhiteSpace(P)) throw new NullParameterException(nameof(P));
+            if (string.IsNullOrWhiteSpace(p)) return new NullParameterException(nameof(p));
+            return null;
         }
-        public static void From(ref object P)
+        public static NullParameterException? From(ref object p)
         {
-            switch (P)
+            switch (p)
             {
-                case null: throw new NullParameterException(nameof(P));
-                default: break;
+                case null: return new NullParameterException(nameof(p));
+                default: return null;
             }
+
         }
     }
 }

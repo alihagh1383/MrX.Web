@@ -10,11 +10,11 @@ namespace MrX.Web.Exceptions
 {
     public class UserNotFoundException : ApiException
     {
-        public UserNotFoundException(string Username, string Password)
+        public UserNotFoundException(string username, string password)
         {
             Message = "User Not Found";
             StatusCode = StatusCodes.Status404NotFound;
-            Data = new { Username, Password };
+            Data = new { username, password };
         }
     }
 }
