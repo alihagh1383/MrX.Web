@@ -4,9 +4,9 @@ namespace MrX.Web.Security;
 
 public static class PasswordCheck
 {
-    public static bool Length_checker(string password, int MinLength = 8, int MaxLength = int.MaxValue)
+    public static bool Length_checker(string password, int minLength = 8, int maxLength = int.MaxValue)
     {
-        if (string.IsNullOrEmpty(password) || password.Length < MinLength || password.Length > MaxLength) return false;
+        if (string.IsNullOrEmpty(password) || password.Length < minLength || password.Length > maxLength) return false;
         return true;
     }
     public static bool UpLetters_checker(string password)
