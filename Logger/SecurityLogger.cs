@@ -6,28 +6,28 @@ namespace MrX.Web.Logger;
 public class SecurityLogger
 {
     private readonly object _l = new();
-    private readonly Action<string, object, bool>? ActionLog;
-    private readonly ILogger logger;
-    private readonly bool ToConsole;
-    private readonly bool ToFile;
+    private readonly Action<string, object, bool>? _actionLog;
+    private readonly ILogger _logger;
+    private readonly bool _toConsole;
+    private readonly bool _toFile;
 
-    public SecurityLogger(ILoggerFactory logger, bool ToFile = false, bool ToConsole = true,
-        Action<string, object, bool>? CostomLog = null)
+    public SecurityLogger(ILoggerFactory logger, bool toFile = false, bool toConsole = true,
+        Action<string, object, bool>? costomLog = null)
     {
-        ActionLog = CostomLog;
-        this.ToFile = ToFile;
-        this.ToConsole = ToConsole;
-        this.logger = logger.CreateLogger(typeof(SecurityLogger));
-        if (ToFile)
+        _actionLog = costomLog;
+        this._toFile = toFile;
+        this._toConsole = toConsole;
+        this._logger = logger.CreateLogger(typeof(SecurityLogger));
+        if (toFile)
             if (!Directory.Exists("Log"))
                 _ = Directory.CreateDirectory("Log");
-        this.logger.LogInformation("SecurityLogger Created");
+        this._logger.LogInformation("SecurityLogger Created");
     }
 
     public Task Log(string id, object message, bool asJson = true)
     {
         var text = (asJson ? JsonConvert.SerializeObject(message) : message).ToString();
-        if (ToFile)
+        if (_toFile)
             try
             {
                 var file = Path.Combine("Log", DateOnly.FromDateTime(DateTime.Now).ToLongDateString() + ".Log");
@@ -38,11 +38,11 @@ public class SecurityLogger
             }
             catch (Exception ex)
             {
-                logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
             }
 
-        if (ToConsole) logger.Log(LogLevel.Information, $"{DateTime.Now}:::{id}=>{text} \n");
-        ActionLog?.Invoke(id, message, asJson);
+        if (_toConsole) _logger.Log(LogLevel.Information, $"{DateTime.Now}:::{id}=>{text} \n");
+        _actionLog?.Invoke(id, message, asJson);
         return Task.CompletedTask;
     }
 }

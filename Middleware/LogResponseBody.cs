@@ -4,20 +4,20 @@ namespace MrX.Web.Middleware;
 
 public class LogResponseBody
 {
-    private readonly RequestDelegate next;
+    private readonly RequestDelegate _next;
 
     public LogResponseBody(RequestDelegate next)
     {
-        this.next = next;
+        this._next = next;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (context.Items["Log"] is SetupLogMiddleware.Log L)
+        if (context.Items["Log"] is SetupLogMiddleware.Log l)
         {
-            await next.Invoke(context);
+            await _next.Invoke(context);
             context.Response.Body.Position = 0;
-            L.Response_Body = new StreamReader(context.Response.Body).ReadToEnd();
+            l.ResponseBody = new StreamReader(context.Response.Body).ReadToEnd();
             context.Response.Body.Position = 0;
         }
         else

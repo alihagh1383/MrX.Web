@@ -19,7 +19,7 @@ public class SetupLogMiddleware(RequestDelegate next, SecurityLogger logger)
         context.Response.Body = memoryStream;
         context.Items.Add("Log", new Log(logger, context.Connection.Id)
         {
-            Request_From =
+            RequestFrom =
                 $"{context.Connection.Id} : {context.Connection.RemoteIpAddress}:{context.Connection.RemotePort} > {context.Connection.LocalIpAddress}:{context.Connection.LocalPort}"
         });
         await next.Invoke(context);
@@ -31,24 +31,24 @@ public class SetupLogMiddleware(RequestDelegate next, SecurityLogger logger)
 
     public class Log(SecurityLogger logger, string connectionId)
     {
-        public string Connection_Id { get; set; } = connectionId;
-        public string Request_Method { get; set; } = string.Empty;
-        public string Request_Protocol { get; set; } = string.Empty;
-        public string Request_Query { get; set; } = string.Empty;
-        public ICollection Request_Cookies { get; set; } = new Dictionary<string, string>();
-        public string Request_Body { get; set; } = string.Empty;
-        public IHeaderDictionary Request_Headers { get; set; } = new HeaderDictionary();
-        public string Request_From { get; set; } = string.Empty;
+        public string ConnectionId { get; set; } = connectionId;
+        public string RequestMethod { get; set; } = string.Empty;
+        public string RequestProtocol { get; set; } = string.Empty;
+        public string RequestQuery { get; set; } = string.Empty;
+        public ICollection RequestCookies { get; set; } = new Dictionary<string, string>();
+        public string RequestBody { get; set; } = string.Empty;
+        public IHeaderDictionary RequestHeaders { get; set; } = new HeaderDictionary();
+        public string RequestFrom { get; set; } = string.Empty;
         public string User { get; set; } = string.Empty;
-        public string Response_Body { get; set; } = string.Empty;
-        public IHeaderDictionary Response_Headers { get; set; } = new HeaderDictionary();
+        public string ResponseBody { get; set; } = string.Empty;
+        public IHeaderDictionary ResponseHeaders { get; set; } = new HeaderDictionary();
         public string Message { get; set; } = string.Empty;
-        public string Request_Path { get; set; } = string.Empty;
+        public string RequestPath { get; set; } = string.Empty;
 
 
         public void DoLog()
         {
-            logger.Log(Connection_Id, this);
+            logger.Log(ConnectionId, this);
         }
 
         public override string ToString()

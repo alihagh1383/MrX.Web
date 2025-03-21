@@ -9,7 +9,7 @@ public class LogRequestBody(RequestDelegate next)
         if (context.Items["Log"] is SetupLogMiddleware.Log log)
         {
             context.Request.Body.Position = 0;
-            log.Request_Body = await new StreamReader(context.Request.Body).ReadToEndAsync();
+            log.RequestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
             context.Request.Body.Position = 0;
             await next.Invoke(context);
         }

@@ -4,20 +4,20 @@ namespace MrX.Web.Middleware;
 
 public class LogResponseHeaders
 {
-    private readonly RequestDelegate next;
+    private readonly RequestDelegate _next;
 
     public LogResponseHeaders(RequestDelegate next)
     {
-        this.next = next;
+        this._next = next;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (context.Items["Log"] is SetupLogMiddleware.Log L)
+        if (context.Items["Log"] is SetupLogMiddleware.Log l)
         {
-            await next.Invoke(context);
+            await _next.Invoke(context);
 
-            L.Response_Headers = context.Response.Headers;
+            l.ResponseHeaders = context.Response.Headers;
         }
         else
         {

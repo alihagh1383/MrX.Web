@@ -4,19 +4,19 @@ namespace MrX.Web.Middleware;
 
 public class LogRequestCookies
 {
-    private readonly RequestDelegate next;
+    private readonly RequestDelegate _next;
 
     public LogRequestCookies(RequestDelegate next)
     {
-        this.next = next;
+        this._next = next;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (context.Items["Log"] is SetupLogMiddleware.Log L)
+        if (context.Items["Log"] is SetupLogMiddleware.Log l)
         {
-            L.Request_Cookies = context.Request.Cookies.ToDictionary();
-            await next.Invoke(context);
+            l.RequestCookies = context.Request.Cookies.ToDictionary();
+            await _next.Invoke(context);
         }
         else
         {

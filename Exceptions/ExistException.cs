@@ -10,11 +10,11 @@ namespace MrX.Web.Exceptions
 {
     public class ExistException : ApiException
     {
-        public ExistException(string For, object Data)
+        public ExistException(string @for, object data)
         {
             Message = $"This Exist";
             StatusCode = StatusCodes.Status412PreconditionFailed;
-            Data = new { For, Data };
+            data = new { For = @for, Data = data };
         }
     }
 }
