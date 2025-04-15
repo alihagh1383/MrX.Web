@@ -1,7 +1,16 @@
 ﻿namespace MrX.Web.Security;
 
-public class Random
+public static class Random
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="len"></param>
+    /// <param name="lowerCase"></param>
+    /// <param name="uppercase"></param>
+    /// <param name="number"></param>
+    /// <param name="seed">set null for random seed</param>
+    /// <returns></returns>
     public static string String(
         int len,
         bool lowerCase = false,
