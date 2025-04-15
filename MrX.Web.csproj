@@ -1,28 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-	</PropertyGroup>
-	<PropertyGroup>
-		<RepositoryUrl>https://github.com/alihagh1383/MrX.Web</RepositoryUrl>
-	</PropertyGroup>
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
-	<ItemGroup>
-		<!--<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />-->
-		<!--<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />-->
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.2" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Remove="BuildNuget.*" />
-		<None Remove="*.nupkg" />
-	</ItemGroup>
-	<ItemGroup>
-		<Folder Include="Components\" />
-	</ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IncludeHttpRuleProtos>true</IncludeHttpRuleProtos>
 
+    </PropertyGroup>
+    <PropertyGroup>
+        <RepositoryUrl>https://github.com/alihagh1383/MrX.Web</RepositoryUrl>
+    </PropertyGroup>
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" Version="9.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.3" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.47.0" />
+        <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Microservices\**" />
+        <EmbeddedResource Remove="Microservices\**" />
+        <None Remove="BuildNuget.*" />
+        <None Remove="*.nupkg" />
+        <None Remove="Microservices\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Components\" />
+    </ItemGroup>
 </Project>
