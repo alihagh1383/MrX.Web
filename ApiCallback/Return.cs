@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +7,12 @@ namespace MrX.Web.ApiCallback
 {
     public class Return<T>
     {
-        public Boolean IsSuccess { get; set; }
+        public bool IsSuccess { get; set; }
         public int StatusCode { get; set; }
         public string? Message { get; set; }
-        public T Data { get; set; }
-        public Return(bool success, int status, string? message = default, T data = default)
+        public T? Data { get; set; }
+
+        protected Return(bool success, int status, string? message = null, T? data = default)
         {
             IsSuccess = success;
             StatusCode = status;
@@ -36,73 +32,73 @@ namespace MrX.Web.ApiCallback
         /// <summary>
         ///     409
         /// </summary>
-        public static Return<T> ThisExist(string? message, T data = default)
+        public static Return<T> ThisExist(string? message, T? data = default)
         {
-            return new(false, 409, message, data);
+            return new Return<T>(false, 409, message, data);
         }
 
         /// <summary>
         ///     403
         /// </summary>
-        public static Return<T> AccessDeny(string? message, T data = default)
+        public static Return<T> AccessDeny(string? message, T? data = default)
         {
-            return new(false, 403, message, data);
+            return new Return<T>(false, 403, message, data);
         }
 
         /// <summary>
         ///     200
         /// </summary>
-        public static Return<T> Sucsses(bool success, string? message, T data = default)
+        public static Return<T> Sucsses(bool success, string? message, T? data = default)
         {
-            return new(success, 200, message, data);
+            return new Return<T>(success, 200, message, data);
         }
 
         /// <summary>
         ///     404
         /// </summary>
-        public static Return<T> NotExist(string message, T data = default)
+        public static Return<T> NotExist(string message, T? data = default)
         {
-            return new(false, 404, message, data);
+            return new Return<T>(false, 404, message, data);
         }
 
         /// <summary>
         ///     400
         /// </summary>
-        public static Return<T> HeaderNotFound(string message, T data = default)
+        public static Return<T> HeaderNotFound(string message, T? data = default)
         {
-            return new(false, 400, message, data);
+            return new Return<T>(false, 400, message, data);
         }
 
         /// <summary>
         ///     400
         /// </summary>
-        public static Return<T> Invalid(string message, T data = default)
+        public static Return<T> Invalid(string message, T? data = default)
         {
-            return new(false, 400, message, data);
+            return new Return<T>(false, 400, message, data);
         }
 
         /// <summary>
         ///     404
         /// </summary>
-        public static Return<T> NotFound(string message, T data = default)
+        public static Return<T> NotFound(string message, T? data = default)
         {
-            return new(false, 404, message, data);
+            return new Return<T>(false, 404, message, data);
         }
 
         /// <summary>
         ///     400
         /// </summary>
-        public static Return<T> ParameterNotFound(string message, T data = default)
+        public static Return<T> ParameterNotFound(string message, T? data = default)
         {
-            return new(false, 400, message, data);
+            return new Return<T>(false, 400, message, data);
         }
 
         /// <summary>
         ///     419
         /// </summary>
-        public static Return<T> Expire(string message, T data = default)
+        public static Return<T> Expire(string message, T? data = default)
         {
-            return new(false, 419, message, data);
+            return new Return<T>(false, 419, message, data);
         }
 
         public override string ToString()
@@ -111,11 +107,6 @@ namespace MrX.Web.ApiCallback
                 new StringEnumConverter());
         }
     }
-    public class Return : Return<object?>
-    {
-        public Return(bool success, int status, string? message = default, object? data = default) : base(success, status, message, data)
-        {
-
-        }
-    }
+    public class Return(bool success, int status, string? message = null, object? data = null)
+        : Return<object?>(success, status, message, data);
 }
