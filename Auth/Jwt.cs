@@ -13,12 +13,12 @@ using IWA = IApplicationBuilder;
 
 public static class Jwt
 {
-    const string Issuer = "MrX ";
-    const string Audience = "Client ";
+    private const string Issuer = "MrX ";
+    private const string Audience = "Client ";
 
-    static string? _secretKey;
-    static string? _for;
-    static TimeSpan _validTime = TimeSpan.FromDays(1);
+    private static string? _secretKey;
+    private static string? _for;
+    private static TimeSpan _validTime = TimeSpan.FromDays(1);
 
     public static void SetValidTime(TimeSpan validTime) => _validTime = validTime;
 
@@ -53,7 +53,7 @@ public static class Jwt
 
     public static string GenerateJwtToken(params IEnumerable<Claim> claims)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey!));
         var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
@@ -69,13 +69,13 @@ public static class Jwt
     public static JwtSecurityToken DecodeJwtToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_secretKey);
+        var key = Encoding.ASCII.GetBytes(_secretKey!);
         tokenHandler.ValidateToken(token, new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = false,
-            ValidateAudience = false,
+            ValidateIssuer = true,
+            ValidateAudience = true,
             ClockSkew = TimeSpan.Zero,
         }, out SecurityToken validatedToken);
         return (JwtSecurityToken)validatedToken;
