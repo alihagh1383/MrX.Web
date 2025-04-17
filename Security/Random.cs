@@ -16,10 +16,9 @@ public static class Random
         bool lowerCase = false,
         bool uppercase = false,
         bool number = true,
-        int? seed = 0
+        int? seed = null
     )
     {
-        var random = new System.Random(seed ?? System.Random.Shared.Next());
         var list = new List<char>();
         if (lowerCase)
             for (var c = 'a'; c <= 'z'; ++c)
@@ -31,7 +30,7 @@ public static class Random
             for (short c = 0; c <= 9; ++c)
                 list.Add(c.ToString()[0]);
 
-        var o = random.GetItems(list.ToArray(), len);
+        var o = ((seed != null) ? new System.Random((int)seed!) : System.Random.Shared).GetItems(list.ToArray(), len);
         return string.Join("", o);
     }
 }
