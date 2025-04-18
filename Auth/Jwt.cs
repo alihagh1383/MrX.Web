@@ -22,10 +22,11 @@ public static class Jwt
     private static TimeSpan _validTime = TimeSpan.FromDays(1);
 
     public static void SetValidTime(TimeSpan validTime) => _validTime = validTime;
+    public static string GetSecretKey() => _secretKey ?? throw new NullReferenceException("First Add Jwt To Services");
 
-    public static IHAB AddJwtService(this IHAB builder, string @for, bool isDefault = false, int seed = 0)
+    public static IHAB AddJwtService(this IHAB builder, string @for, bool isDefault = false, int seed = 0, string? secretKey = null)
     {
-        Jwt._secretKey = Security.Random.String(512, seed: seed);
+        Jwt._secretKey = secretKey ?? Security.Random.String(512, seed: seed);
         Jwt._for = @for;
         builder.Services.AddAuthorization();
         var d = (isDefault) ? builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) : builder.Services.AddAuthentication();
