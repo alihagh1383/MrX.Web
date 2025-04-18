@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,14 +23,18 @@ public static class Jwt
 
     public static void SetValidTime(TimeSpan validTime) => _validTime = validTime;
 
-    public static IHAB AddJwtService(this IHAB builder, string @for, int seed = 0)
+    public static IHAB AddJwtService(this IHAB builder, string @for, bool isDefault = false, int seed = 0)
     {
-        Jwt._secretKey = MrX.Web.Security.Random.String(512, seed: seed);
+        Jwt._secretKey = Security.Random.String(512, seed: seed);
         Jwt._for = @for;
         builder.Services.AddAuthorization();
-        builder.Services.AddAuthentication().AddJwtBearer(
+        var d = (isDefault) ? builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) : builder.Services.AddAuthentication();
+
+        d.AddJwtBearer(
             options =>
             {
+                options.Audience = Audience + @for;
+                options.Authority = Issuer + @for;
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,
@@ -38,15 +43,16 @@ public static class Jwt
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = Issuer + @for,
                     ValidAudience = Audience + @for,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(_secretKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey))
                 };
+                options.MapInboundClaims = false;
             });
         return builder;
     }
 
     public static IWA UseJwt(this IWA app)
     {
+        app.UseAuthorization();
         app.UseAuthentication();
         return app;
     }
