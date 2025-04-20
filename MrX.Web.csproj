@@ -22,13 +22,13 @@
         <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Remove="Components\**" />
         <Compile Remove="Microservices\**" />
+        <EmbeddedResource Remove="Components\**" />
         <EmbeddedResource Remove="Microservices\**" />
         <None Remove="BuildNuget.*" />
         <None Remove="*.nupkg" />
+        <None Remove="Components\**" />
         <None Remove="Microservices\**" />
-    </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Components\" />
     </ItemGroup>
 </Project>
