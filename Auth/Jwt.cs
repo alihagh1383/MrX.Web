@@ -23,15 +23,15 @@ public static class Jwt
 
     public static void SetValidTime(TimeSpan validTime) => _validTime = validTime;
     public static string GetSecretKey() => _secretKey ?? throw new NullReferenceException("First Add Jwt To Services");
-/// <summary>
-/// 
-/// </summary>
-/// <param name="builder"></param>
-/// <param name="for"></param>
-/// <param name="isDefault">by default jwt is not default scheme</param>
-/// <param name="seed">use seed if secretKey is null</param>
-/// <param name="secretKey"></param>
-/// <returns></returns>
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <param name="for"></param>
+    /// <param name="isDefault">by default jwt is not default scheme</param>
+    /// <param name="seed">use seed if secretKey is null</param>
+    /// <param name="secretKey"></param>
+    /// <returns></returns>
     public static IHAB AddJwtService(this IHAB builder, string @for, bool isDefault = false, int seed = 0, string? secretKey = null)
     {
         Jwt._secretKey = secretKey ?? Security.Random.String(512, seed: seed);
@@ -42,6 +42,7 @@ public static class Jwt
         d.AddJwtBearer(
             options =>
             {
+                options.RequireHttpsMetadata = false;
                 options.Audience = Audience + @for;
                 options.Authority = Issuer + @for;
                 options.TokenValidationParameters = new TokenValidationParameters()
