@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,6 @@ using Microsoft.IdentityModel.Tokens;
 namespace MrX.Web.Auth;
 
 using IHAB = IHostApplicationBuilder;
-using IWA = IApplicationBuilder;
 
 public static class Jwt
 {
@@ -32,11 +32,10 @@ public static class Jwt
     /// <param name="seed">use seed if secretKey is null</param>
     /// <param name="secretKey"></param>
     /// <returns></returns>
-    public static IHAB AddJwtService(this IHAB builder, string @for, bool isDefault = false, int seed = 0, string? secretKey = null)
+    public static AuthenticationBuilder AddJwtAuthentication(this IHAB builder, string @for, bool isDefault = false, int seed = 0, string? secretKey = null)
     {
         Jwt._secretKey = secretKey ?? Security.Random.String(512, seed: seed);
         Jwt._for = @for;
-        builder.Services.AddAuthorization();
         var d = (isDefault) ? builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) : builder.Services.AddAuthentication();
 
         d.AddJwtBearer(
@@ -57,14 +56,7 @@ public static class Jwt
                 };
                 options.MapInboundClaims = false;
             });
-        return builder;
-    }
-
-    public static IWA UseJwt(this IWA app)
-    {
-        app.UseAuthorization();
-        app.UseAuthentication();
-        return app;
+        return d;
     }
 
     public static string GenerateJwtToken(params IEnumerable<Claim> claims)
