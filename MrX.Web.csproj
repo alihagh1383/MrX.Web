@@ -20,7 +20,8 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.47.0" />
         <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
-    </ItemGroup>
+		<PackageReference Include="Aspire.MongoDB.Driver" Version="9.3.1" />
+	</ItemGroup>
     <ItemGroup>
         <Compile Remove="Components\**" />
         <Compile Remove="Microservices\**" />

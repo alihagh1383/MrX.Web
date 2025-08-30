@@ -1,1 +1,1 @@
- dotnet pack --configuration Release -p:PackageVersion=2.1.1 --output .
+ dotnet pack --configuration Release -p:PackageVersion=2.1.6 --output .

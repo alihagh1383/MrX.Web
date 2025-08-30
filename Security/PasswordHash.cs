@@ -12,8 +12,8 @@ public static class PasswordHash
 
     public static string Hash(string input)
     {
-        var salt = RandomNumberGenerator.GetBytes(SaltSize);
-        var hash = Rfc2898DeriveBytes.Pbkdf2(
+        byte[] salt = RandomNumberGenerator.GetBytes(SaltSize);
+        byte[] hash = Rfc2898DeriveBytes.Pbkdf2(
             input,
             salt,
             Iterations,
@@ -32,11 +32,11 @@ public static class PasswordHash
     public static bool Verify(string input, string hashString)
     {
         string[] segments = hashString.Split(SegmentDelimiter);
-        var hash = Convert.FromHexString(segments[0]);
-        var salt = Convert.FromHexString(segments[1]);
-        var iterations = int.Parse(segments[2]);
-        var algorithm = new HashAlgorithmName(segments[3]);
-        var inputHash = Rfc2898DeriveBytes.Pbkdf2(
+        byte[] hash = Convert.FromHexString(segments[0]);
+        byte[] salt = Convert.FromHexString(segments[1]);
+        int iterations = int.Parse(segments[2]);
+        HashAlgorithmName algorithm = new(segments[3]);
+        byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(
             input,
             salt,
             iterations,

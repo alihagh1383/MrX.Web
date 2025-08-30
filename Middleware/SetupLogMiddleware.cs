@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using MrX.Web.Logger;
 using Newtonsoft.Json;
+using System.Collections;
 
 namespace MrX.Web.Middleware;
 
@@ -14,8 +14,8 @@ public class SetupLogMiddleware(RequestDelegate next, SecurityLogger logger)
     public async Task InvokeAsync(HttpContext context)
     {
         context.Request.EnableBuffering();
-        var org = context.Response.Body;
-        var memoryStream = new MemoryStream();
+        Stream org = context.Response.Body;
+        MemoryStream memoryStream = new();
         context.Response.Body = memoryStream;
         context.Items.Add("Log", new Log(logger, context.Connection.Id)
         {

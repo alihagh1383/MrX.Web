@@ -1,4 +1,6 @@
-﻿namespace MrX.Web.Security;
+﻿using System.Security.Cryptography;
+
+namespace MrX.Web.Security;
 
 public static class Random
 {
@@ -21,19 +23,23 @@ public static class Random
         char[]? lowerCaseSet = null
     )
     {
-        var list = new List<char>();
+        List<char> list = [];
         if (uppercase)
-            for (var c = 'A'; c <= 'Z'; ++c) list.Add(c);
+            for (char c = 'A'; c <= 'Z'; ++c) list.Add(c);
         if (number)
             for (short c = 0; c <= 9; ++c) list.Add(c.ToString()[0]);
         if (whiteSpase)
             list.Add(' ');
         if (lowerCase)
             if (lowerCaseSet is null)
-                for (var c = 'a'; c <= 'z'; ++c) list.Add(c);
+                for (char c = 'a'; c <= 'z'; ++c) list.Add(c);
             else if (lowerCaseSet is { })
                 list.AddRange(lowerCaseSet);
-        var o = ((seed != null) ? new System.Random((int)seed!) : System.Random.Shared).GetItems(list.ToArray(), len);
+        char[] o = ((seed != null) ? new System.Random((int)seed!) : System.Random.Shared).GetItems(list.ToArray(), len);
         return string.Join("", o);
+    }
+    public static string Base64(int bytelen)
+    {
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(bytelen));
     }
 }

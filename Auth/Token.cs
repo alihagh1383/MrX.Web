@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-namespace MrX.Web.Auth;
+﻿namespace MrX.Web.Auth;
 
 public class Token
 {
@@ -11,8 +8,8 @@ public class Token
     }
     public static bool ValidToken(Guid Token)
     {
-        var b = Token.ToByteArray();
-        var t = new Token32(b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
+        byte[] b = Token.ToByteArray();
+        Token32 t = new(b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
         return (t.ToString() == Token.ToString());
     }
     public struct Token32
@@ -49,7 +46,7 @@ public class Token
         public byte C13 => (byte)(C5 + C6);
         public byte C14 => (byte)(C3 * 256 / C4);
         public byte C15 => (byte)(C7 * 256 / C8);
-        public byte C16 => (byte)(DateOnly.FromDateTime(DateTime.UtcNow).DayOfYear);
+        public byte C16 => (byte)(DateOnly.FromDateTime(DateTime.UtcNow).DayOfYear % 256);
 
         public override readonly string ToString()
         {
@@ -63,7 +60,7 @@ public class Token
             return false;
         }
         public override readonly int GetHashCode() => ((Guid)this).GetHashCode();
-        public static implicit operator Guid(Token32 t) => new Guid([t.C1, t.C2, t.C3, t.C4, t.C5, t.C6, t.C7, t.C8, t.C9, t.C10, t.C11, t.C12, t.C13, t.C14, t.C15, t.C16]);
+        public static implicit operator Guid(Token32 t) => new([t.C1, t.C2, t.C3, t.C4, t.C5, t.C6, t.C7, t.C8, t.C9, t.C10, t.C11, t.C12, t.C13, t.C14, t.C15, t.C16]);
         public static bool operator ==(Guid s1, Token32 s2) => s1 == (Guid)s2;
         public static bool operator !=(Guid s1, Token32 s2) => s1 != (Guid)s2;
 

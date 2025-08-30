@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace MrX.Web.Exceptions
 {
