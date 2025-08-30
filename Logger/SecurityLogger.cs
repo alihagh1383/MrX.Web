@@ -26,11 +26,11 @@ public class SecurityLogger
 
     public Task Log(string id, object message, bool asJson = true)
     {
-        var text = (asJson ? JsonConvert.SerializeObject(message) : message).ToString();
+        string? text = (asJson ? JsonConvert.SerializeObject(message) : message).ToString();
         if (_toFile)
             try
             {
-                var file = Path.Combine("Log", DateOnly.FromDateTime(DateTime.Now).ToLongDateString() + ".Log");
+                string file = Path.Combine("Log", DateOnly.FromDateTime(DateTime.Now).ToLongDateString() + ".Log");
                 lock (_l)
                 {
                     File.AppendAllText(file, $"{DateTime.Now}:::{id}=>{text} \n");

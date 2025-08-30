@@ -8,7 +8,7 @@ public static class WebApplicationExtension
     {
         app.UseWhen(configuration: appBuilder => appBuilder.UseMiddleware<T>(), predicate: context =>
         {
-            foreach (var item in path)
+            foreach (string item in path)
                 if (context.Request.Path.StartsWithSegments(item))
                     return true;
             return false;

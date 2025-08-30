@@ -1,12 +1,11 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace MrX.Web.Auth;
 
@@ -31,13 +30,25 @@ public static class Jwt
     /// <param name="isDefault">by default jwt is not default scheme</param>
     /// <param name="seed">use seed if secretKey is null</param>
     /// <param name="secretKey"></param>
+    /// <param name="usepem"></param>
+    /// <param name="certPemFilePath">file by RFC 7468 PEM encoded certificate and private key</param>
     /// <returns></returns>
-    public static AuthenticationBuilder AddJwtAuthentication(this IHAB builder, string @for, bool isDefault = false, int seed = 0, string? secretKey = null)
+    public static AuthenticationBuilder AddJwtAuthentication(this IHAB builder,
+        string @for,
+        bool isDefault = false,
+        int seed = 0,
+        string? secretKey = null,
+        bool usepem = false,
+        string? certPemFilePath = null)
     {
         Jwt._secretKey = secretKey ?? Security.Random.String(512, seed: seed);
         Jwt._for = @for;
-        var d = (isDefault) ? builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) : builder.Services.AddAuthentication();
-
+        AuthenticationBuilder d = (isDefault) ? builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) : builder.Services.AddAuthentication();
+        SecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+        if (usepem == true && certPemFilePath is not null)
+        {
+            key = new X509SecurityKey(System.Security.Cryptography.X509Certificates.X509Certificate2.CreateFromPemFile(certPemFilePath));
+        }
         d.AddJwtBearer(
             options =>
             {
@@ -52,7 +63,7 @@ public static class Jwt
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = Issuer + @for,
                     ValidAudience = Audience + @for,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey))
+                    IssuerSigningKey = key,
                 };
                 options.MapInboundClaims = false;
             });
@@ -61,10 +72,10 @@ public static class Jwt
 
     public static string GenerateJwtToken(params IEnumerable<Claim> claims)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey!));
-        var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(_secretKey!));
+        SigningCredentials signingCredentials = new(key, SecurityAlgorithms.HmacSha256);
 
-        var token = new JwtSecurityToken(
+        JwtSecurityToken token = new(
             issuer: Issuer + Jwt._for,
             audience: Audience + Jwt._for,
             claims: claims,
@@ -76,8 +87,8 @@ public static class Jwt
 
     public static JwtSecurityToken DecodeJwtToken(string token)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_secretKey!);
+        JwtSecurityTokenHandler tokenHandler = new();
+        byte[] key = Encoding.ASCII.GetBytes(_secretKey!);
         tokenHandler.ValidateToken(token, new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,

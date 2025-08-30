@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using MrX.Web.ApiCallback;
+﻿using MrX.Web.ApiCallback;
 
 namespace MrX.Web.Exceptions
 {
@@ -16,6 +8,6 @@ namespace MrX.Web.Exceptions
         public int StatusCode { get; set; }
         public string? Message { get; set; }
         public object? Data { get; set; }
-        public Return ToReturn() => new Return(IsSuccess, StatusCode, Message, Data);
+        public Return ToReturn() => new(IsSuccess, StatusCode, Message, Data);
     }
 }
