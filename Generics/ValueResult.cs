@@ -81,6 +81,7 @@ namespace MrX.Web.Generics
         public static implicit operator ValueResult<T>(Exception exception) => ValueResult<T>.Failure(exception);
         public static implicit operator ValueResult<T>(T value) => ValueResult<T>.Success(value);
         public static implicit operator T(ValueResult<T> value) => value.Value ?? throw new CannotParsFailureValueResultTToT();
+        public static implicit operator ValueResult(ValueResult<T> value) => value.IsSuccess ? ValueResult.Success() : ValueResult.Failure(value.Error);
         public static implicit operator ValueResult<T>(ValueResult valueResult) =>
             (valueResult.IsSuccess)
             ? new() { Error = new CannotParsSucceedValueResultToValueResultT(), IsSuccess = false }

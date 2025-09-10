@@ -5,23 +5,23 @@ namespace MrX.Web.Logger;
 
 public class SecurityLogger
 {
-    private readonly object _l = new();
+    private readonly Lock _l = new();
     private readonly Action<string, object, bool>? _actionLog;
     private readonly ILogger _logger;
     private readonly bool _toConsole;
     private readonly bool _toFile;
 
     public SecurityLogger(ILoggerFactory logger, bool toFile = false, bool toConsole = true,
-        Action<string, object, bool>? costomLog = null)
+        Action<string, object, bool>? customLog = null)
     {
-        _actionLog = costomLog;
-        this._toFile = toFile;
-        this._toConsole = toConsole;
-        this._logger = logger.CreateLogger(typeof(SecurityLogger));
+        _actionLog = customLog;
+        _toFile = toFile;
+        _toConsole = toConsole;
+        _logger = logger.CreateLogger<SecurityLogger>();
         if (toFile)
             if (!Directory.Exists("Log"))
                 _ = Directory.CreateDirectory("Log");
-        this._logger.LogInformation("SecurityLogger Created");
+        _logger.LogInformation("SecurityLogger Created");
     }
 
     public Task Log(string id, object message, bool asJson = true)
@@ -38,10 +38,10 @@ public class SecurityLogger
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("{}", ex.Message);
             }
 
-        if (_toConsole) _logger.Log(LogLevel.Information, $"{DateTime.Now}:::{id}=>{text} \n");
+        if (_toConsole) _logger.Log(LogLevel.Information, "{}:::{}=>{} \n", DateTime.Now, id, text);
         _actionLog?.Invoke(id, message, asJson);
         return Task.CompletedTask;
     }

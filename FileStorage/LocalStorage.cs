@@ -4,7 +4,7 @@ namespace MrX.Web.FileStorage;
 
 public class LocalStorage : IStorage
 {
-    private string path;
+    private readonly string path;
 
     public LocalStorage(string Path)
     {
@@ -22,7 +22,7 @@ public class LocalStorage : IStorage
 
     public bool DownloadFile(string name, out string text)
     {
-        if (Exists(name, out var ex) && !ex)
+        if (Exists(name, out bool ex) && !ex)
         {
             text = "";
             return false;
@@ -40,7 +40,7 @@ public class LocalStorage : IStorage
 
     public bool DeleteFile(string name)
     {
-        if (Exists(name, out var ex) && !ex)
+        if (Exists(name, out bool ex) && !ex)
             return false;
         File.Delete(Path(name));
         return true;

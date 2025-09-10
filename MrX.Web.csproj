@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IncludeHttpRuleProtos>true</IncludeHttpRuleProtos>
@@ -15,7 +15,6 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" Version="9.0.3" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.3" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.47.0" />

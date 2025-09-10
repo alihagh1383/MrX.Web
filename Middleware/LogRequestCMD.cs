@@ -2,14 +2,9 @@
 
 namespace MrX.Web.Middleware;
 
-public class LogRequestCmd
+public class LogRequestCmd(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public LogRequestCmd(RequestDelegate next)
-    {
-        this._next = next;
-    }
+    private readonly RequestDelegate _next = next;
 
     public async Task InvokeAsync(HttpContext context)
     {
@@ -18,7 +13,7 @@ public class LogRequestCmd
             l.RequestMethod = context.Request.Method;
             l.RequestPath = context.Request.Path;
             l.RequestProtocol = context.Request.Protocol;
-            l.RequestQuery = context.Request.QueryString.Value;
+            l.RequestQuery = context.Request?.QueryString.Value ?? "";
             await _next.Invoke(context);
         }
         else

@@ -39,14 +39,14 @@ public class Token
         }
 
         public byte C1, C2, C3, C4, C5, C6, C7, C8;
-        public byte C9 => (byte)((C1 + C2) * C4 / C3);
-        public byte C10 => (byte)((C5 + C6) * C8 / C7);
-        public byte C11 => (byte)((C9 * C10) % 256);
-        public byte C12 => (byte)(C1 + C2);
-        public byte C13 => (byte)(C5 + C6);
-        public byte C14 => (byte)(C3 * 256 / C4);
-        public byte C15 => (byte)(C7 * 256 / C8);
-        public byte C16 => (byte)(DateOnly.FromDateTime(DateTime.UtcNow).DayOfYear % 256);
+        public readonly byte C9 => (byte)((C1 + C2) * C4 / C3);
+        public readonly byte C10 => (byte)((C5 + C6) * C8 / C7);
+        public readonly byte C11 => (byte)((C9 * C10) % 256);
+        public readonly byte C12 => (byte)(C1 + C2);
+        public readonly byte C13 => (byte)(C5 + C6);
+        public readonly byte C14 => (byte)(C3 * 256 / C4);
+        public readonly byte C15 => (byte)(C7 * 256 / C8);
+        public static byte C16 => (byte)(DateOnly.FromDateTime(DateTime.UtcNow).DayOfYear % 256);
 
         public override readonly string ToString()
         {
@@ -60,7 +60,7 @@ public class Token
             return false;
         }
         public override readonly int GetHashCode() => ((Guid)this).GetHashCode();
-        public static implicit operator Guid(Token32 t) => new([t.C1, t.C2, t.C3, t.C4, t.C5, t.C6, t.C7, t.C8, t.C9, t.C10, t.C11, t.C12, t.C13, t.C14, t.C15, t.C16]);
+        public static implicit operator Guid(Token32 t) => new([t.C1, t.C2, t.C3, t.C4, t.C5, t.C6, t.C7, t.C8, t.C9, t.C10, t.C11, t.C12, t.C13, t.C14, t.C15, C16]);
         public static bool operator ==(Guid s1, Token32 s2) => s1 == (Guid)s2;
         public static bool operator !=(Guid s1, Token32 s2) => s1 != (Guid)s2;
 

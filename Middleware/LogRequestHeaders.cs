@@ -2,14 +2,9 @@
 
 namespace MrX.Web.Middleware;
 
-public class LogRequestHeaders
+public class LogRequestHeaders(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public LogRequestHeaders(RequestDelegate next)
-    {
-        this._next = next;
-    }
+    private readonly RequestDelegate _next = next;
 
     public async Task InvokeAsync(HttpContext context)
     {
