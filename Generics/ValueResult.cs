@@ -60,8 +60,7 @@ public class ValueResult
 public class ValueResult<T> : ValueResult
 {
     public T? Value { get; protected set; } = default;
-    [MemberNotNullWhen(false, nameof(Error))]
-    [MemberNotNullWhen(false, nameof(Value))]
+    [MemberNotNullWhen(true, nameof(Value))]
     [MemberNotNullWhen(false, nameof(Error))]
     [MemberNotNullWhen(false, nameof(ErrorName))]
     public new bool IsSuccess { get; protected set; }
