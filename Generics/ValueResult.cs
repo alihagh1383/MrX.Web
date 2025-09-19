@@ -1,93 +1,118 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
-namespace MrX.Web.Generics
+public class ValueResult
 {
-    public class ValueResult
+    [MemberNotNullWhen(false, nameof(Error))]
+    [MemberNotNullWhen(false, nameof(ErrorName))]
+    public bool IsSuccess { get; protected set; }
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public Exception? Error { get; protected set; }
+
+    public string? ErrorName => Error?.GetType().Name;
+
+    protected ValueResult() { }
+
+    // Factory Methods
+    public static ValueResult Success() => new() { IsSuccess = true };
+
+    public static ValueResult Failure(Exception exception) => new() { IsSuccess = false, Error = exception };
+
+    public static ValueResult Failure<E>(string? message = null) where E : Exception, new()
     {
-        [MemberNotNullWhen(false, nameof(Error), nameof(ErrorName))]
-        public bool IsSuccess { get; protected set; }
-
-        [Newtonsoft.Json.JsonIgnore, System.Text.Json.Serialization.JsonIgnore]
-        public Exception? Error { get; protected set; }
-
-        public string? ErrorName { get => Error?.GetType().Name; }
-        public static ValueResult Success()
-        {
-            return new ValueResult
-            {
-                IsSuccess = true,
-                Error = null
-            };
-        }
-        public static ValueResult Failure(Exception exception)
-        {
-            return new ValueResult
-            {
-                IsSuccess = false,
-                Error = exception
-            };
-        }
-        public static ValueResult Failure<E>() where E : Exception
-        {
-            return new ValueResult
-            {
-                IsSuccess = false,
-                Error = (typeof(E).GetConstructor([])?.Invoke([]) as Exception as E)!
-            };
-        }
-        public static implicit operator ValueResult(Exception exception) => ValueResult.Failure(exception);
-    }
-    public class ValueResult<T>
-    {
-        private ValueResult() { }
-
-        [MemberNotNullWhen(false, nameof(Error), nameof(ErrorName))]
-        [MemberNotNullWhen(true, nameof(Value))]
-        public bool IsSuccess { get; protected set; }
-
-        [Newtonsoft.Json.JsonIgnore]
-        [System.Text.Json.Serialization.JsonIgnore]
-        public Exception? Error { get; protected set; }
-        public string? ErrorName { get => Error?.GetType().Name; }
-
-        public T? Value { get; protected set; } = default;
-
-        public static ValueResult<T> Success(T value)
-        {
-            return new ValueResult<T>
-            {
-                IsSuccess = true,
-                Value = value,
-                Error = null
-            };
-        }
-        public static ValueResult<T> Failure(Exception exception)
-        {
-            return new ValueResult<T>
-            {
-                IsSuccess = false,
-                Error = exception
-            };
-        }
-        public static ValueResult<T> Failure<E>() where E : Exception
-        {
-            return new ValueResult<T>
-            {
-                IsSuccess = false,
-                Error = (typeof(E).GetConstructor([])?.Invoke([]) as Exception as E)!
-            };
-        }
-
-        public static implicit operator ValueResult<T>(Exception exception) => ValueResult<T>.Failure(exception);
-        public static implicit operator ValueResult<T>(T value) => ValueResult<T>.Success(value);
-        public static implicit operator T(ValueResult<T> value) => value.Value ?? throw new CannotParsFailureValueResultTToT();
-        public static implicit operator ValueResult(ValueResult<T> value) => value.IsSuccess ? ValueResult.Success() : ValueResult.Failure(value.Error);
-        public static implicit operator ValueResult<T>(ValueResult valueResult) =>
-            (valueResult.IsSuccess)
-            ? new() { Error = new CannotParsSucceedValueResultToValueResultT(), IsSuccess = false }
-            : new() { Error = valueResult.Error, IsSuccess = valueResult.IsSuccess, Value = default };
+        var ex = string.IsNullOrEmpty(message) ? new E() : (E)Activator.CreateInstance(typeof(E), message)!;
+        return Failure(ex);
     }
 
-    public class CannotParsSucceedValueResultToValueResultT : Exception;
-    public class CannotParsFailureValueResultTToT : Exception;
+    // Fluent Pattern
+    public ValueResult Then(Action action)
+    {
+        if (!IsSuccess) return this;
+        action();
+        return this;
+    }
+
+    public ValueResult<TOut> Then<TOut>(Func<ValueResult<TOut>> func)
+    {
+        return IsSuccess ? func() : ValueResult<TOut>.Failure(Error!);
+    }
+
+    public async Task<ValueResult> ThenAsync(Func<Task<ValueResult>> func)
+    {
+        return IsSuccess ? await func() : this;
+    }
+
+    public async Task<ValueResult<TOut>> ThenAsync<TOut>(Func<Task<ValueResult<TOut>>> func)
+    {
+        return IsSuccess ? await func() : ValueResult<TOut>.Failure(Error!);
+    }
+
+    public void Match(Action onSuccess, Action<Exception> onFailure)
+    {
+        if (IsSuccess) onSuccess();
+        else onFailure(Error!);
+    }
+    public static implicit operator ValueResult(Exception ex) => Failure(ex);
 }
+
+public class ValueResult<T> : ValueResult
+{
+    public T? Value { get; protected set; } = default;
+    [MemberNotNullWhen(false, nameof(Error))]
+    [MemberNotNullWhen(false, nameof(Value))]
+    [MemberNotNullWhen(false, nameof(Error))]
+    [MemberNotNullWhen(false, nameof(ErrorName))]
+    public new bool IsSuccess { get; protected set; }
+    [System.Text.Json.Serialization.JsonIgnore]
+    public new Exception? Error { get; protected set; }
+    public new string? ErrorName => Error?.GetType().Name;
+    protected ValueResult() { }
+
+    // Factory Methods
+    public static ValueResult<T> Success(T value) => new() { IsSuccess = true, Value = value };
+
+    public new static ValueResult<T> Failure(Exception exception) => new() { IsSuccess = false, Error = exception };
+
+    public static new ValueResult<T> Failure<E>(string? message = null) where E : Exception, new()
+    {
+        var ex = string.IsNullOrEmpty(message) ? new E() : (E)Activator.CreateInstance(typeof(E), message)!;
+        return Failure(ex);
+    }
+
+    // Fluent / Functional helpers
+    public ValueResult<TOut> Then<TOut>(Func<T, ValueResult<TOut>> func)
+    {
+        return IsSuccess ? func(Value!) : ValueResult<TOut>.Failure(Error!);
+    }
+
+    public ValueResult Then(Action<T> action)
+    {
+        if (IsSuccess) action(Value!);
+        return this;
+    }
+
+    public ValueResult<TOut> Map<TOut>(Func<T, TOut> mapper)
+    {
+        return IsSuccess ? ValueResult<TOut>.Success(mapper(Value!)) : ValueResult<TOut>.Failure(Error!);
+    }
+
+    public async Task<ValueResult<TOut>> ThenAsync<TOut>(Func<T, Task<ValueResult<TOut>>> func)
+    {
+        return IsSuccess ? await func(Value!) : ValueResult<TOut>.Failure(Error!);
+    }
+
+    public void Match(Action<T> onSuccess, Action<Exception> onFailure)
+    {
+        if (IsSuccess) onSuccess(Value!);
+        else onFailure(Error!);
+    }
+
+    // Implicit conversions
+    public static implicit operator ValueResult<T>(T value) => Success(value);
+    public static implicit operator ValueResult<T>(Exception ex) => Failure(ex);
+    public static implicit operator T(ValueResult<T> result) => result.IsSuccess ? result.Value! : throw new CannotParseFailureValueResultTToT();
+}
+
+public class CannotParseFailureValueResultTToT : Exception { }
