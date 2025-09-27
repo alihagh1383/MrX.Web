@@ -1,6 +1,6 @@
-﻿using System.Text.RegularExpressions;
-using MrX.Web.Generics;
+﻿using MrX.Web.Generics;
 using MrX.Web.ValueObject.Common;
+using System.Text.RegularExpressions;
 
 public class National_Code_Not_Valid : MrXValueObjectEx;
 namespace MrX.Web.ValueObject

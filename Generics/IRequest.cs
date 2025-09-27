@@ -1,4 +1,3 @@
-using Amazon.Runtime.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -38,7 +37,7 @@ public static class CommandAndQueryRegisteryExtensions
         public void AddCommandAndQueryRegistery(params List<Assembly> assemblys)
         {
             services.AddScoped<CommandAndQueryRegistery>();
-            foreach (var assembly in assemblys)
+            foreach (Assembly assembly in assemblys)
             {
                 foreach (Type handlerType in assembly.GetTypes().Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IQueryHandler<>))))
                     foreach (Type handlerInterface in handlerType.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IQueryHandler<>)))
@@ -83,17 +82,19 @@ public class CommandAndQueryRegistery(IServiceProvider service)
         {
             case IQueryResult<object> query:
                 {
-                    var handlerT = CommandAndQueryRegisteryExtensions.RQueres[query.GetType()];
-                    var handler = service.GetService(handlerT);
-                    if (handler is not { } h) return new ArgumentException("Type Of message not Support");
-                    return await (h as IQueryResultHandler<IQueryResult<object>, object>)!.Invoke((message as IQueryResult<object>)!, cancellation);
+                    Type handlerT = CommandAndQueryRegisteryExtensions.RQueres[query.GetType()];
+                    object? handler = service.GetService(handlerT);
+                    return handler is not { } h
+                        ? (ValueResult<object>)new ArgumentException("Type Of message not Support")
+                        : await (h as IQueryResultHandler<IQueryResult<object>, object>)!.Invoke((message as IQueryResult<object>)!, cancellation);
                 }
             case ICommandResult<object> query:
                 {
-                    var handlerT = CommandAndQueryRegisteryExtensions.RCommands[query.GetType()];
-                    var handler = service.GetService(handlerT);
-                    if (handler is not { } h) return new ArgumentException("Type Of message not Support");
-                    return await (h as ICommandResultHandler<ICommandResult<object>, object>)!.Invoke((message as ICommandResult<object>)!, cancellation);
+                    Type handlerT = CommandAndQueryRegisteryExtensions.RCommands[query.GetType()];
+                    object? handler = service.GetService(handlerT);
+                    return handler is not { } h
+                        ? (ValueResult<object>)new ArgumentException("Type Of message not Support")
+                        : await (h as ICommandResultHandler<ICommandResult<object>, object>)!.Invoke((message as ICommandResult<object>)!, cancellation);
                 }
             default:
                 return new ArgumentException("Type Of message not Support");
@@ -105,34 +106,36 @@ public class CommandAndQueryRegistery(IServiceProvider service)
         {
             case IQuery query:
                 {
-                    var handlerT = CommandAndQueryRegisteryExtensions.Queres[query.GetType()];
-                    var handler = service.GetService(handlerT);
-                    if (handler is not { } h) return new ArgumentException("Type Of message not Support");
-                    return await (h as IQueryHandler<IQuery>)!.Invoke((message as IQuery)!, cancellation);
+                    Type handlerT = CommandAndQueryRegisteryExtensions.Queres[query.GetType()];
+                    object? handler = service.GetService(handlerT);
+                    return handler is not { } h
+                        ? (ValueResult)new ArgumentException("Type Of message not Support")
+                        : await (h as IQueryHandler<IQuery>)!.Invoke((message as IQuery)!, cancellation);
                 }
             case IQueryResult<object> query:
                 {
-                    var handlerT = CommandAndQueryRegisteryExtensions.RQueres[query.GetType()];
-                    var handler = service.GetService(handlerT);
+                    Type handlerT = CommandAndQueryRegisteryExtensions.RQueres[query.GetType()];
+                    object? handler = service.GetService(handlerT);
                     if (handler is not { } h) return new ArgumentException("Type Of message not Support");
-                    var r = await (h as IQueryResultHandler<IQueryResult<object>, object>)!.Invoke((message as IQueryResult<object>)!, cancellation);
+                    ValueResult<object> r = await (h as IQueryResultHandler<IQueryResult<object>, object>)!.Invoke((message as IQueryResult<object>)!, cancellation);
                     return r.IsSuccess
                         ? ValueResult.Success()
                         : ValueResult.Failure(r.Error);
                 }
             case ICommand command:
                 {
-                    var handlerT = CommandAndQueryRegisteryExtensions.Commands[command.GetType()];
-                    var handler = service.GetService(handlerT);
-                    if (handler is not { } h) return new ArgumentException("Type Of message not Support");
-                    return await (h as ICommandHandler<ICommand>)!.Invoke((message as ICommand)!, cancellation);
+                    Type handlerT = CommandAndQueryRegisteryExtensions.Commands[command.GetType()];
+                    object? handler = service.GetService(handlerT);
+                    return handler is not { } h
+                        ? (ValueResult)new ArgumentException("Type Of message not Support")
+                        : await (h as ICommandHandler<ICommand>)!.Invoke((message as ICommand)!, cancellation);
                 }
             case ICommandResult<object> query:
                 {
-                    var handlerT = CommandAndQueryRegisteryExtensions.RCommands[query.GetType()];
-                    var handler = service.GetService(handlerT);
+                    Type handlerT = CommandAndQueryRegisteryExtensions.RCommands[query.GetType()];
+                    object? handler = service.GetService(handlerT);
                     if (handler is not { } h) return new ArgumentException("Type Of message not Support");
-                    var r = (await (h as ICommandResultHandler<ICommandResult<object>, object>)!.Invoke((message as ICommandResult<object>)!, cancellation));
+                    ValueResult<object> r = (await (h as ICommandResultHandler<ICommandResult<object>, object>)!.Invoke((message as ICommandResult<object>)!, cancellation));
                     return r.IsSuccess
                         ? ValueResult.Success()
                         : ValueResult.Failure(r.Error);

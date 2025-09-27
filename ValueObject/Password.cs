@@ -1,8 +1,8 @@
-using MrX.Web.Generics;
 using MrX.Web.Security;
 using MrX.Web.ValueObject.Common;
 
 namespace MrX.Web.ValueObject;
+
 public class Password_Is_Empty : MrXValueObjectEx;
 
 public class Password_Is_Lang_Or_Short(int min, int max) : MrXValueObjectEx
@@ -19,6 +19,10 @@ public class Password
             : (password.Length is < 8 or > 100)
                 ? new Password_Is_Lang_Or_Short(8, 100)
                 : new CanNotNull() { Value = PasswordHash.Hash(password) };
+    public static ValueResult<CanNotNull> TryCreateFromHash(string password) =>
+        (string.IsNullOrWhiteSpace(password))
+            ? new Password_Is_Empty()
+            : new CanNotNull() { Value = (password) };
     public class CanNull : NullValueObject<CanNull>
     {
         internal CanNull() { }

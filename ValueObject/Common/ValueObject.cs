@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace MrX.Web.ValueObject.Common;
 
 using System;
@@ -19,8 +17,8 @@ public abstract class ValueObject<T>
 
     public override int GetHashCode()
     {
-        var hash = new HashCode();
-        foreach (var obj in GetEqualityComponents())
+        HashCode hash = new();
+        foreach (object? obj in GetEqualityComponents())
             hash.Add(obj);
         return hash.ToHashCode();
     }
@@ -44,14 +42,14 @@ public abstract class NullValueObject<T> : ValueObject<T> where T : NullValueObj
 
     public static T CreateEmpty()
     {
-        var ctor = typeof(T).GetConstructor(
+        ConstructorInfo ctor = typeof(T).GetConstructor(
             BindingFlags.Instance | BindingFlags.NonPublic,
             null,
             Type.EmptyTypes,
             null
         ) ?? throw new InvalidOperationException($"{typeof(T).Name} must have a private parameterless constructor.");
 
-        var instance = (T)ctor.Invoke(null);
+        T instance = (T)ctor.Invoke(null);
         instance.IsNull = true;
         return instance;
     }

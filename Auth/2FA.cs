@@ -170,27 +170,14 @@ namespace MrX.Web.Auth
                 return value - 24;
             }
             //97-122 == lowercase letters
-            if (value < 123 && value > 96)
-            {
-                return value - 97;
-            }
-
-            throw new ArgumentException("Character is not a Base32 character.", nameof(c));
+            return value < 123 && value > 96 ? value - 97 : throw new ArgumentException("Character is not a Base32 character.", nameof(c));
         }
 
         private static char ValueToChar(byte b)
         {
-            if (b < 26)
-            {
-                return (char)(b + 65);
-            }
-
-            if (b < 32)
-            {
-                return (char)(b + 24);
-            }
-
-            throw new ArgumentException("Byte is not a value Base32 value.", nameof(b));
+            return b < 26
+                ? (char)(b + 65)
+                : b < 32 ? (char)(b + 24) : throw new ArgumentException("Byte is not a value Base32 value.", nameof(b));
         }
 
     }

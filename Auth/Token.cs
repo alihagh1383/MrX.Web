@@ -54,10 +54,7 @@ public class Token
         }
         public override readonly bool Equals(object? obj)
         {
-            if (obj == null) return false;
-            if (obj is not Token32 or Guid) return false;
-            if ((Guid)obj == this) return true;
-            return false;
+            return obj == null ? false : obj is not Token32 or Guid ? false : (Guid)obj == this;
         }
         public override readonly int GetHashCode() => ((Guid)this).GetHashCode();
         public static implicit operator Guid(Token32 t) => new([t.C1, t.C2, t.C3, t.C4, t.C5, t.C6, t.C7, t.C8, t.C9, t.C10, t.C11, t.C12, t.C13, t.C14, t.C15, C16]);

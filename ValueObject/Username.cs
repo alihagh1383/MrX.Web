@@ -1,7 +1,7 @@
-using MrX.Web.Generics;
 using MrX.Web.ValueObject.Common;
 
 namespace MrX.Web.ValueObject;
+
 public class UserName_Is_Empty : MrXValueObjectEx;
 public class UserName_Is_Lang_Or_Short(int min, int max) : MrXValueObjectEx
 {

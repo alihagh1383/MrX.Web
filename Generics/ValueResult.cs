@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 
 public class ValueResult
 {
@@ -22,7 +20,7 @@ public class ValueResult
 
     public static ValueResult Failure<E>(string? message = null) where E : Exception, new()
     {
-        var ex = string.IsNullOrEmpty(message) ? new E() : (E)Activator.CreateInstance(typeof(E), message)!;
+        E ex = string.IsNullOrEmpty(message) ? new E() : (E)Activator.CreateInstance(typeof(E), message)!;
         return Failure(ex);
     }
 
@@ -72,11 +70,11 @@ public class ValueResult<T> : ValueResult
     // Factory Methods
     public static ValueResult<T> Success(T value) => new() { IsSuccess = true, Value = value };
 
-    public new static ValueResult<T> Failure(Exception exception) => new() { IsSuccess = false, Error = exception };
+    public static new ValueResult<T> Failure(Exception exception) => new() { IsSuccess = false, Error = exception };
 
     public static new ValueResult<T> Failure<E>(string? message = null) where E : Exception, new()
     {
-        var ex = string.IsNullOrEmpty(message) ? new E() : (E)Activator.CreateInstance(typeof(E), message)!;
+        E ex = string.IsNullOrEmpty(message) ? new E() : (E)Activator.CreateInstance(typeof(E), message)!;
         return Failure(ex);
     }
 

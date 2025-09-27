@@ -19,19 +19,7 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.47.0" />
         <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
-		<PackageReference Include="Aspire.MongoDB.Driver" Version="9.3.1" />
+        <PackageReference Include="Aspire.MongoDB.Driver.v3" Version="9.4.2" />
 	</ItemGroup>
-    <ItemGroup>
-        <Compile Remove="Components\**" />
-        <Compile Remove="Microservices\**" />
-        <EmbeddedResource Remove="Components\**" />
-        <EmbeddedResource Remove="Microservices\**" />
-        <None Remove="BuildNuget.*" />
-        <None Remove="*.nupkg" />
-        <None Remove="Components\**" />
-        <None Remove="Microservices\**" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\Auth.Ex\Auth.Ex.csproj" />
-    </ItemGroup>
+
 </Project>

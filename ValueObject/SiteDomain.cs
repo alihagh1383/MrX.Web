@@ -2,17 +2,19 @@
 
 namespace MrX.Web.ValueObject
 {
-    public class Url_Is_Empty : MrXValueObjectEx;
-    public class Url_Is_Not_Valid : MrXValueObjectEx;
+    public class SiteDomain_Is_Empty : MrXValueObjectEx;
+    public class SiteDomain_Is_Not_Valid : MrXValueObjectEx;
 
-    public class Url
+    public class SiteDomain
     {
         public static ValueResult<CanNotNull> TryCreate(string value) =>
-            (string.IsNullOrWhiteSpace(value))
-                ? new Url_Is_Empty()
-                : (!Uri.TryCreate(value, UriKind.Absolute, out Uri? u))
-                    ? new Url_Is_Not_Valid()
-                    : new CanNotNull() { Value = u };
+          (string.IsNullOrWhiteSpace(value))
+              ? new Url_Is_Empty()
+              : (!Uri.TryCreate(value, UriKind.Absolute, out Uri? u))
+                  ? new Url_Is_Not_Valid()
+                  : (!Uri.TryCreate(u.Scheme + "://" + u.Authority, UriKind.Absolute, out u))
+                      ? new Url_Is_Not_Valid()
+                      : new CanNotNull() { Value = new Uri($"{u.Scheme}://{u.Host}") };
         public class CanNull : NullValueObject<CanNull>
         {
             public Uri? Value { get; internal init; }
